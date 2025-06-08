@@ -15,6 +15,7 @@ riscv32-unknown-elf-gcc --version
 ```
 
 **Screenshot:**
+![Image](https://github.com/user-attachments/assets/e8568475-f9f1-45a9-9f20-32a7b0d6fee8)
 
 ---
 
@@ -40,9 +41,14 @@ riscv32-unknown-elf-gcc -nostdlib -T linker.ld hello.c -o hello.elf
 
 **Screenshot:**
 
+
+![Image](https://github.com/user-attachments/assets/ca19f894-00a5-4a11-900a-4b23dd5169ec)
+![Image](https://github.com/user-attachments/assets/233bfbfa-2844-47a7-8f7d-bd86210875e3)
+
+
 ---
 
-## 3. Hex Dump \& Disassembly
+## 3. From C to Assembly
 
 **Commands:**
 
@@ -52,8 +58,18 @@ hexdump -C hello.elf > hello.hex
 ```
 
 **Screenshot:**
+![Image](https://github.com/user-attachments/assets/0321f41e-83c6-4e43-a7f4-82afb72ffa20)
 
 ---
+
+## 4. 
+
+**Commands:**
+
+```bash
+riscv32-unknown-elf-objdump -d hello.elf > hello.asm
+hexdump -C hello.elf > hello.hex
+```
 
 ## 4. ABI \& Register Cheat-Sheet
 
@@ -71,9 +87,7 @@ hexdump -C hello.elf > hello.hex
 | s0–s11 | x8–x9, x18–x27 | Saved regs (callee-saved) |
 | a0–a7 | x10–x17 | Args/return values |
 
-**Screenshot:**
 
----
 
 ## 5. Stepping with GDB
 
@@ -89,6 +103,7 @@ riscv32-unknown-elf-gdb hello.elf
 ```
 
 **Screenshot:**
+
 
 ---
 
