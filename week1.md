@@ -1,12 +1,3 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" class="logo" width="120"/>
-
-# make it a similar fashion as this
-
-Certainly! Here’s a Markdown outline for your RISC-V bare-metal tasks, styled to match the structure and clarity of your provided examples.
-**You can insert images where indicated after exporting them from your Word file.**
-
----
-
 # Week 1 Task Report
 
 
@@ -283,16 +274,4 @@ int _write(int fd, char *buf, int len) {
 ---
 
 *Replace all image filenames with your actual exported images from the Word file.*
-
-<div style="text-align: center">⁂</div>
-
-[^1]: Week1.docx
-
-[^2]: README.md
-
-[^3]: https://stackoverflow.com/questions/76455941/how-to-run-and-debug-a-simple-riscv32-bare-metal-assembly-compiled-into-elf-us
-
-[^4]: https://github.com/schoeberl/risc-v-lab/blob/master/README.md
-
-[^5]: https://vivonomicon.com/2020/02/11/bare-metal-risc-v-development-with-the-gd32vf103cb/
 
