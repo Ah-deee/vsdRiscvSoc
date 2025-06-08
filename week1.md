@@ -2259,7 +2259,7 @@ This demonstrates practical implementation of thread-safe synchronization primit
 ---
 
 
-## 16. Using Newlib printf Without an OS
+# 16. Using Newlib printf Without an OS
 
 ## Using Newlib printf Without an OS (Bare Metal RISC-V)
 
@@ -2349,16 +2349,133 @@ This approach enables powerful C standard library features like `printf` on bare
 
 ---
 
-## 17.  Endianness & Struct Packing
 
-**Example:**
+# 17) Endianness & Struct Packing Verification
 
-```c
-struct __attribute__((packed)) packed_struct {
-    uint8_t a; uint32_t b; uint16_t c; uint8_t d;
-};
-printf("Packed struct size: %zu\n", sizeof(struct packed_struct));
+## Complete Implementation Files
+
+### Linker Script (`endian.ld`)
 ```
+
+ENTRY(_start)
+
+MEMORY
+{
+FLASH (rx)  : ORIGIN = 0x2040, LENGTH = 256K
+SRAM  (rwx) : ORIGIN = 0x80000000, LENGTH = 64K
+}
+
+SECTIONS
+{
+.text : {
+*(.text*)
+*(.rodata*)
+} > FLASH
+
+.data : {
+*(.data*)
+} > SRAM AT > FLASH
+
+.bss : {
+*(.bss*)
+*(COMMON)
+} > SRAM
+
+/DISCARD/ : { *(.eh_frame) *(.comment) }
+}
+
+```
+
+### Assembly Startup Code (`endian_start.s`)
+```
+
+.section .text
+.global _start
+
+_start:
+la sp, _stack_top       \# Initialize stack pointer
+call main               \# Enter C program
+1:j 1b                    \# Infinite loop after return
+
+.section .bss
+.space 1024               \# 1KB stack space
+.global _stack_top
+_stack_top:
+
+```
+
+### Endianness Test Program (`task17_simple_endian.c`)
+```
+
+\#include <stdint.h>
+\#define UART0 0x10013000
+
+void uart_putc(char c) {
+volatile uint8_t *tx = (uint8_t *)(UART0);
+while ((*(volatile uint32_t *)(UART0 + 0x18)) \& 0x800); // Wait TX ready
+*tx = c;
+}
+
+void main() {
+uint32_t val = 0x12345678;
+uint8_t *ptr = (uint8_t *)\&val;
+
+uart_puts("Endianness Test:\n");
+
+for(int i=0; i<4; ++i) { // Print each byte
+char hex[] = "0123456789ABCDEF";
+uart_putc(hex[(ptr[i] >>4)\&0xF]);
+uart_putc(hex[ptr[i]\&0xF]);
+uart_putc(' ');
+}
+
+while(1); // Halt
+}
+
+```
+
+## Build Process
+```
+
+
+# Assemble startup code
+
+riscv32-unknown-elf-as -march=rv32imac -o endian_start.o endian_start.s
+
+# Compile C program
+
+riscv32-unknown-elf-gcc -c -O2 -march=rv32imac -o task17_simple_endian.o task17_simple_endian.c
+
+# Link components
+
+riscv32-unknown-elf-gcc -nostartfiles -T endian.ld -o task17_simple_endian.elf \
+endian_start.o task17_simple_endian.o
+
+```
+
+## Execution & Verification
+```
+
+qemu-system-riscv32 -machine sifive_e -nographic -bios none -kernel task17_simple_endian.elf
+
+# Expected output:
+
+Endianness Test:
+78 56 34 12
+
+```
+
+This implementation demonstrates:
+1. **Memory layout control** through linker script
+2. **Low-level UART access** for bare-metal output
+3. **Byte-wise memory inspection** technique
+4. **RV32IMAC toolchain usage** with proper architecture flags
+
+The output `78 56 34 12` shows:
+- Least Significant Byte (0x78) at lowest memory address
+- Consistent little-endian byte ordering pattern
+- Successful cross-compilation and execution in QEMU RV32 environment```
+
 
 **Common checks:**
 
@@ -2367,8 +2484,6 @@ printf("Packed struct size: %zu\n", sizeof(struct packed_struct));
 - Use `riscv32-unknown-elf-objdump -d file.elf` to check for expected instructions.
 
 **Screenshot:**
-
----
-
+![Image](https://github.com/user-attachments/assets/35a1d190-7406-448d-851a-b78e5bf45a61)
 
 
