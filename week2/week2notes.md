@@ -29,3 +29,9 @@ Within the `caravel` hierarchy:
 - **Reset Synchronization**: The reset signal is first synchronized in the Power-On Reset (POR) block, which generates a clean, debounced reset for the rest of the design.
 - **Clock Synchronization**: The primary clock is first buffered and distributed at the top level of the hierarchy, often immediately after entering the `caravel` module, before being routed to sub-modules like the management SoC and user project area.
 
+  ---
+
+  Caravel block diagram:
+
+  ![Image](https://github.com/user-attachments/assets/e3ecca94-0c43-4235-9f19-c5f1eed1865f)
+
